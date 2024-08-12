@@ -126,11 +126,6 @@ namespace EulerProject.ProblemCollection
                     sum = 0;
                     for (int f = 1; f <= 9; f++)
                     {
-                        if (d == 5 && z == 1 && f == 4)
-                        {
-                            int x = 1;
-                        }
-
                         // The first digit of number is f
                         sum = permutationList[f];
                         number = f;

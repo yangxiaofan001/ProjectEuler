@@ -55,10 +55,6 @@ namespace EulerProject.ProblemCollection.Problem051_100
 
             for (int x = 2; x <= upperLimit; x++)
             {
-                if (x == 12496)
-                {
-                    int y = 1;
-                }
                 if (chainSteps[x].HasValue) continue;
 
                 int currX = x;
@@ -72,10 +68,6 @@ namespace EulerProject.ProblemCollection.Problem051_100
                 {
                     while (true)
                     {
-                        if (dsum == 12496)
-                        {
-                            int z = 1;
-                        }
                         if (dsum == x)
                             break;
 

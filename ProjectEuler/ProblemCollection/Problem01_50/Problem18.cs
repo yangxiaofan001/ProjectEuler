@@ -191,11 +191,6 @@ namespace EulerProject.ProblemCollection
                 result = pyramid[0][0] + Math.Max(pyramid[1][0], pyramid[1][1]);
             else
             {
-                if (pyramid.Count == 3)
-                {
-                    int x = 1;
-                }
-
                 List<List<int>> lPyramid = LeftPyramid(pyramid);
                 List<List<int>> rPyramid = RightPyramid(pyramid);
 

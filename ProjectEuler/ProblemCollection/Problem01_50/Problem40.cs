@@ -38,10 +38,6 @@ namespace EulerProject.ProblemCollection
 
         public override string Solution1()
         {
-
-
-            int number = 1;
-            int n = 1;
             int digits = 1;
             long totalChar = 0;
             int upperLimit = 1000000;

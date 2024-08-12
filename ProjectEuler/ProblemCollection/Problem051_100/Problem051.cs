@@ -75,11 +75,6 @@ namespace EulerProject.ProblemCollection.Problem051_100
 
                         foreach (string fNumberString in fnList)
                         {
-                            if (td == 6 && r == 3 && fNumberString == "233" && list.Count == 3 && list[0] == 1 && list[1] == 3 && list[2] == 5)
-                            {
-                                int ne = 1;
-                            }
-
                             int primeCount = 0;
                             int nonPrimeCount = 0;
                             

@@ -40,11 +40,6 @@ namespace EulerProject.ProblemCollection
             long totalScore = 0;
             for (int i = 1; i <= nameList.Count; i++)
             {
-                if (nameList[i - 1] == "COLIN")
-                {
-                    int j = 1;
-                }
-
                 int worth = 0;
                 foreach (char c in nameList[i - 1])
                 {

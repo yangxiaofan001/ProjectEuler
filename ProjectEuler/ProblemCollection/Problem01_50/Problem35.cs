@@ -78,11 +78,6 @@ namespace EulerProject.ProblemCollection
                         pow *= 10;
                     }
 
-                    if (number == 179)
-                    {
-                        int x = 1;
-                    }
-
                     permutationLongList.Add(number);
                     if (allPossibleCircularPrimeList[0] == number)
                         continue;

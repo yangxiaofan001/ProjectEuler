@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EulerProject.ProblemCollection.Problem051_100
 {
-    public class Problem52 : ProblemBase
+    public class Problem052 : ProblemBase
     {
         public override string Description
         {

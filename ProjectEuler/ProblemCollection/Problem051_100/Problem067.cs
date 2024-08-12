@@ -38,8 +38,6 @@ namespace EulerProject.ProblemCollection
         }
 
         List<string> pyramid = new List<string>();
-        double calledTimes;
-        DateTime dtStart;
         List<string> stringPyramid = new List<string>{
     "59",
     "73 41",

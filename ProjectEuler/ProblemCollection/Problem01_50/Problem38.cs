@@ -46,11 +46,6 @@ namespace EulerProject.ProblemCollection
 
             for (int i = 1; i <= 9999; i++)
             {
-                if (i == 192)
-                {
-                    int x = 1;
-                }
-
                 int j = 1;
                 string s = "";
                 while (true)

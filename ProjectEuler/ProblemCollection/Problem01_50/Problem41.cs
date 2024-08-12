@@ -89,8 +89,6 @@ namespace EulerProject.ProblemCollection
 
 
             return maxPrime.ToString();
-
-            return int.MaxValue.ToString();
         }
     }
 }
