@@ -65,7 +65,7 @@ namespace EulerProject
                         {
                             Console.WriteLine(ex.Message);
                             if (ex.InnerException != null)
-                                Console.WriteLine(ex.InnerException.Message);
+                                Console.WriteLine(ex.InnerException.Message); 
                         }
                     }
                 }
