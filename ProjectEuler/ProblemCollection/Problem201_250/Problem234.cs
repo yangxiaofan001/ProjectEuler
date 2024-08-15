@@ -44,35 +44,38 @@ What is the sum of all semidivisible numbers not exceeding 999966663333?
             }
         }
 
-        long upperLimit = 15;//999966663333;
+        long upperLimit = 999966663333;
 
         public override string Solution1()
         {
+            List<long> primes;
             double sqrtOfUpperLimit = Math.Sqrt(upperLimit);
-            List<long> primes = Utils.GetAllPrimeUnderP(16);
+            if (sqrtOfUpperLimit > (long)sqrtOfUpperLimit)
+            {
+                // need 1 more prime number. assume there is alway at least 1 prime number between any n and 2n (assumption works for n = (long)(sqrt(999966663333)))
+                primes = Utils.GetAllPrimeUnderP(2 * (long)sqrtOfUpperLimit);
+                long maxPrime = primes.Where(p => p > sqrtOfUpperLimit).Min(p => p);
+                primes = primes.Where (p => p <= maxPrime).ToList();
+            }
+            else
+            {
+                primes = Utils.GetAllPrimeUnderP((long)sqrtOfUpperLimit);
+            }
 
             long sum = 0;
             int p1Index;
             int p2Index;
-for(p1Index = 0; p1Index < primes.Count - 1; p1Index ++)
-{
-    if (primes[p1Index + 1] >= sqrtOfUpperLimit) break;
-}
-p2Index = p1Index + 1;
-
-
-
-            //for(int p1Index = 0; p1Index < primes.Count - 1; p1Index ++)
-            //{
-              //  int p2Index = p1Index + 1;
-                long lps = primes[p1Index];
+            for(p1Index = 0; p1Index <= primes.Count - 2; p1Index ++)
+            {
+                p2Index = p1Index + 1;
+                 long lps = primes[p1Index];
                 long ups = primes[p2Index];
                 long a = lps * lps;
                 long b = ups * ups;
                 long t = b / a;
 
                 long k = a + lps;
-                while(k < b)
+                while(k < b && k < upperLimit)
                 {
                     if (k % ups > 0)
                         sum += k;
@@ -81,15 +84,13 @@ p2Index = p1Index + 1;
                 }
 
                 k = b - ups;
-                while (k > a)
+                while (k > a && k < upperLimit)
                 {
                     if (k % lps > 0)
                         sum += k;
                     k-=ups;
                 }
-
-               //p1Index ++;
-            //}
+            }
 
             string answer = sum.ToString();
             return answer;

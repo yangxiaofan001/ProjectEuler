@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectEuler", "ProjectEuler\ProjectEuler.csproj", "{6591BDA9-6512-433A-8789-6E665EADF26A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectEuler", "ProjectEuler\ProjectEuler.csproj", "{CF90D4DF-FE08-4FBD-A0E3-467B02420024}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6591BDA9-6512-433A-8789-6E665EADF26A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6591BDA9-6512-433A-8789-6E665EADF26A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6591BDA9-6512-433A-8789-6E665EADF26A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6591BDA9-6512-433A-8789-6E665EADF26A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF90D4DF-FE08-4FBD-A0E3-467B02420024}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF90D4DF-FE08-4FBD-A0E3-467B02420024}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF90D4DF-FE08-4FBD-A0E3-467B02420024}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF90D4DF-FE08-4FBD-A0E3-467B02420024}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
