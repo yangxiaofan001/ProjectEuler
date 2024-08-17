@@ -169,14 +169,14 @@ namespace EulerProject.ProblemCollection
 
         void WriteLog(string line)
         {
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(@"c:\temp\log.txt", true);
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(@"log.txt", true);
             sw.WriteLine(line);
             sw.Close();
         }
 
         void ClearLog()
         {
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(@"c:\temp\log.txt", false);
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(@"log.txt", false);
             sw.Close();
         }
 

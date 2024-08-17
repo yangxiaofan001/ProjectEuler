@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Mail;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,184 +44,94 @@ Your task has been made easy, as the encryption key consists of three lower case
             }
         }
 
-        int DecryptXOR(int c, int x)
-        {
-            List<bool> cInBinary = new List<bool>();
-            List<bool> xInBinary = new List<bool>();
-
-            while (c > 0)
-            {
-                cInBinary.Insert(0, c%2==1);
-                c/=2;
-            }
-
-            while(x > 0)
-            {
-                xInBinary.Insert(0, x%2==1);
-                x/=2;
-            }
-
-            int outputLength = Math.Max(cInBinary.Count, xInBinary.Count);
-            int cInBinaryCount = cInBinary.Count;
-            int xInBinaryCount = xInBinary.Count;
-            for(int i = 0; i < outputLength - cInBinaryCount; i ++) cInBinary.Insert(0, false);
-            for(int i = 0; i < outputLength - xInBinaryCount; i ++) xInBinary.Insert(0, false);
-
-            List<bool> returnValueInBinary = new List<bool>();
-            for(int i = 0; i < outputLength; i ++)
-            {
-                returnValueInBinary.Add(cInBinary[i] == xInBinary[i]);
-            }
-
-            int decryptedCode = 0;
-            for(int i = outputLength - 1; i >= 0; i --)
-            {
-                decryptedCode = 2 * decryptedCode + (returnValueInBinary[i] ? 1 : 0);
-            }
-
-            return decryptedCode;
-
-        }
-
-
         public override string Solution1()
         {
-            // c(26, 3) = 2600
-
             System.IO.StreamReader sr = new StreamReader("Files/0059_cipher.txt");
             string line = sr.ReadLine();
             sr.Close();
-            string [] codeArray = line.Split(new char []{','}, StringSplitOptions.RemoveEmptyEntries);
-            Console.WriteLine($"{codeArray.Length} characters");
-
-            List<int> possibleP1List = new List<int>();
-            for(char p1 = 'a'; p1 <= 'z'; p1++)
+            string [] codeCharArray = line.Split(new char []{','}, StringSplitOptions.RemoveEmptyEntries);
+            uint [] codeArray = new uint [codeCharArray.Length];
+            for(int i = 0; i < codeCharArray.Length; i ++)
             {
-                int d = DecryptXOR(Int32.Parse(codeArray[0]), p1);
-                if ((d >='a' && d <='z')||(d>='A'&&d<='Z'))
-                {
-                    possibleP1List.Add(p1);
-                }
+                codeArray[i] = uint.Parse(codeCharArray[i]);
             }
-
-            List<int> possibleP2List = new List<int>();
-            for(char p1 = 'a'; p1 <= 'z'; p1++)
-            {
-                int d = DecryptXOR(Int32.Parse(codeArray[1]), p1);
-                if ((d >='a' && d <='z')||(d>='A'&&d<='Z'))
-                {
-                    possibleP2List.Add(p1);
-                }
-            }
-
-            List<int> possibleP3List = new List<int>();
-            for(char p1 = 'a'; p1 <= 'z'; p1++)
-            {
-                int d = DecryptXOR(Int32.Parse(codeArray[2]), p1);
-                if ((d >='a' && d <='z')||(d>='A'&&d<='Z'))
-                {
-                    possibleP3List.Add(p1);
-                }
-            }
-
-            Console.Write("Possible p1: ");
-            foreach(int c in possibleP1List) Console.Write($"{(char)c} ");
-            Console.WriteLine();
-
-            Console.Write("Possible p2: ");
-            foreach(int c in possibleP2List) Console.Write($"{(char)c} ");
-            Console.WriteLine();
-
-            Console.Write("Possible p3: ");
-            foreach(int c in possibleP3List) Console.Write($"{(char)c} ");
-            Console.WriteLine();
-
-            List<int> toBeRemovedFromP1List = new List<int>();
-            foreach (char p1 in possibleP1List)
-            {
-                int d = DecryptXOR(Int32.Parse(codeArray[3]), p1);
-                if ((d <='a' || d >='z') &&(d <='A' || d >= 'Z'))
-                    toBeRemovedFromP1List.Add(p1);
-            }
-
-            foreach(char p1 in toBeRemovedFromP1List) possibleP1List.Remove(p1);
-
-            List<int> toBeRemovedFromP2List = new List<int>();
-            foreach (char p2 in possibleP2List)
-            {
-                int d = DecryptXOR(Int32.Parse(codeArray[4]), p2);
-                if ((d <='a' || d >='z') &&(d <='A' || d >= 'Z'))
-                    toBeRemovedFromP2List.Add(p2);
-            }
-
-            foreach(char p2 in toBeRemovedFromP2List) possibleP2List.Remove(p2);
-
-            List<int> toBeRemovedFromP3List = new List<int>();
-            foreach (char p3 in possibleP3List)
-            {
-                int d = DecryptXOR(Int32.Parse(codeArray[5]), p3);
-                if ((d <='a' || d >='z') &&(d <='A' || d >= 'Z'))
-                    toBeRemovedFromP3List.Add(p3);
-            }
-
-            foreach(char p3 in toBeRemovedFromP3List) possibleP3List.Remove(p3);
-
-            Console.Write("Possible p1: ");
-            foreach(int c in possibleP1List) Console.Write($"{(char)c} ");
-            Console.WriteLine();
-
-            Console.Write("Possible p2: ");
-            foreach(int c in possibleP2List) Console.Write($"{(char)c} ");
-            Console.WriteLine();
-
-            Console.Write("Possible p3: ");
-            foreach(int c in possibleP3List) Console.Write($"{(char)c} ");
-            Console.WriteLine();
-
-            // string password = "god";
-            // bool solved = false;
+            // Console.WriteLine($"{codeArray.Length} characters");
+            // List<string> possiblePassList = new List<string>();
+            // uint [] di = new uint [6];
             // for(char p1 = 'a'; p1 <= 'z'; p1++)
             // {
-            //     for(char p2 = 'a'; p2 <= 'z'; p2 ++)
+            //     for(char p2 = 'a'; p2 <= 'z'; p2++)
             //     {
-            //         for(char p3 = 'a'; p3 <= 'z'; p3 ++)
+            //         for(char p3 = 'a'; p3 <= 'z'; p3++)
             //         {
-            //             StringBuilder sb = new StringBuilder();
-            //             sb.Append(p1);
-            //             sb.Append(p2);
-            //             sb.Append(p3);
-            //             password = sb.ToString();
-            //             int index = 0;
-            //             string decryptedText = "";
-            //             bool failed = false;
-
-            //             foreach(string code in codeArray)
+            //             di[0] = codeArray[0] ^ p1;
+            //             di[3] = codeArray[3] ^ p1;
+            //             di[1] = codeArray[1] ^ p2;
+            //             di[4] = codeArray[4] ^ p2;
+            //             di[2] = codeArray[2] ^ p3;
+            //             di[5] = codeArray[5] ^ p3;
+            //             bool possiblepass = true;
+            //             for(int i = 0; i < 6; i ++)
             //             {
-            //                 char c = (char)DecryptXOR(Int32.Parse(code), (int)password[index % 3]);
-            //                 if ((c < 'a' || c > 'z') && (c<'A' || c > 'Z')) {
-            //                     failed = true;
-            //                     break;
-            //                 }
-            //                 decryptedText = decryptedText + c;
-            //                 index ++;
+            //                 if (di[i] < 32 && di[i] != 9 && di[i] != 10 && di[i] != 13)
+            //                     possiblepass = false;
             //             }
-
-            //             string result = failed ? "failed" : "succeeded";
-            //             Console.WriteLine($"password = {password} {result}: {decryptedText}");
-
-            //             if (!failed)
-            //             {
-            //                 solved = true;
-            //                 break;
-            //             }
+            //             if (possiblepass)
+            //             possiblePassList.Add(p1.ToString() + p2.ToString() + p3.ToString());    
             //         }
-
-            //         if (solved) break;
             //     }
-            //     if (solved) break;
             // }
+
+            // foreach(string password in possiblePassList)
+            // {
+            //     Console.WriteLine(password);
+            // }
+
+            uint [] password = new uint[3];
+            bool solved = false;
+            long sum = 0;
+
+            for(char p1 = 'a'; p1 <= 'z'; p1++)
+            {
+                for(char p2 = 'a'; p2 <= 'z'; p2 ++)
+                {
+                    for(char p3 = 'a'; p3 <= 'z'; p3 ++)
+                    {
+                        password[0] = p1;
+                        password[1] = p2;
+                        password[2] = p3;
+                        int index = 0;
+                        string decryptedText = "";
+
+                        foreach(uint code in codeArray)
+                        {
+                            uint c = code ^ password[index % 3];
+                            decryptedText = decryptedText + (char)c;
+                            index ++;
+                        }
+
+                        // the plain text must contain common English words
+                        // chech the decrypted text contain " a " and " the "
+                        if (decryptedText.IndexOf(" a ") >= 0 && decryptedText.IndexOf(" the ") >= 0)
+                        {
+                            Console.WriteLine($"password = {p1.ToString() + p2.ToString() + p3.ToString()} : {decryptedText}");
+
+                            solved = true;
+
+                            foreach(char c in decryptedText)    
+                            {
+                                sum +=c;
+                            }
+                            break;
+                        }
+                    }
+
+                    if (solved) break;
+                }
+                if (solved) break;
+            }
             
-            string answer = "Working on it...";
+            string answer = sum.ToString();
 
             return answer;
         }

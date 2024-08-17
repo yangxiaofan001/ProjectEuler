@@ -66,11 +66,8 @@ namespace EulerProject
             {
                 if (bList[i])
                 {
-                    if (IsPrime(i))
-                    {
-                        for (int k = i + i; k <= p; k += i)
-                            bList[k] = false;
-                    }
+                    for (int k = i + i; k <= p; k += i)
+                        bList[k] = false;
                 }
             }
 
@@ -92,17 +89,58 @@ namespace EulerProject
 
             for (int i = 2; i <= upperLimit; i++)
             {
-                if (bList[i])
+                if (IsPrime(i))
                 {
-                    if (IsPrime(i))
-                    {
-                        for (int k = i + i; k <= p; k += i)
-                            bList[k] = false;
-                    }
+                    for (int k = i + i; k <= p; k += i)
+                        bList[k] = false;
                 }
             }
 
             return bList;
+        }
+
+        public static void SieveOfEratosthenes(int p, ref List<long> primeList, ref List<bool> primeCheckerList)
+        {
+            List<bool> bList = new List<bool>();
+            for (int i = 0; i <= p; i++) bList.Add(true);
+
+            long upperLimit = (long)Math.Sqrt(p);
+
+            for (int i = 2; i <= upperLimit; i++)
+                if (bList[i])
+                    for (int k = i + i; k <= p; k += i) bList[k] = false;
+
+            primeList = new List<long>();
+            for (int i = 2; i <= p; i++)
+                if (bList[i])
+                    primeList.Add(i);
+            
+            primeCheckerList = bList.ToList();
+        }
+
+        public static void ContinueSieveOfEratosthens(int n, ref List<long> primeList, ref List<bool> primeCheckerList)
+        {
+            if (n < primeCheckerList.Count) return;
+            List<bool> bList = new List<bool>();
+            for (int i = 0; i < primeCheckerList.Count; i++) bList.Add(primeCheckerList[i]);
+            for (int i = primeCheckerList.Count; i < n; i++) bList.Add(true);
+
+            long upperLimit = (long)Math.Sqrt(n);
+
+            for (int i = 2; i <= upperLimit; i++)
+                if (bList[i])
+                {
+                    int start = primeCheckerList.Count - 1 + i - ((primeCheckerList.Count - 1) % i);
+                    for (int k = start; k < n; k += i) bList[k] = false;
+                }
+
+            primeList = new List<long>();
+            for (int i = 2; i < n; i++)
+                if (bList[i])
+                    primeList.Add(i);
+            
+            primeCheckerList = bList.ToList();
+
         }
 
         public static List<long> AllPrimesUnder2Million_CheatSheet()
