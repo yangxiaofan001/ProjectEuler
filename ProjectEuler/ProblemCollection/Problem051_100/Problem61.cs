@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -53,51 +54,78 @@ Find the sum of the only ordered set of six cyclic 4-digit numbers for which eac
 
         public override string Solution1()
         {
-            List<List<int>> numberListList = new List<List<int>>
-            {
-                new List<int>(),
-                new List<int>(),
-                new List<int>(),
-                new List<int>(),
-                new List<int>(),
-                new List<int>(),
-                new List<int>(),
-                new List<int>(),
-                new List<int>(),
-            };
-            List<string> nameList = new List<string>{"", "", "", "Triangle", "Square", "Pentagonal", "Hexagonal", "Heptagonal", "Octagonal"};
+            List<int> numberList = new List<int>();
 
             int n = 1;
-            List<int> pList = new List<int>{0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-            while(pList[3] <= 9999 || pList[4] <= 9999 || pList[5] <= 9999 || pList[6] <= 9999 || pList[7] <= 9999 || pList[8] <= 9999)
+            int p = 0;
+            while (p < 10000)
             {
-                pList[3] = n * (n + 1) / 2;
-                pList[4] = n * n;
-                pList[5] = n * (3 * n - 1) / 2;
-                pList[6] = n * (2 * n - 1);
-                pList[7] = n * ( 5 * n - 3) / 2;
-                pList[8] = n * (3 * n - 2);
+                p = n * (3 * n - 2);
+                if (p > 1000 && p < 10000) numberList.Add(80000 + p);
+                p = n * (5 * n - 3) / 2;
+                if (p > 1000 && p < 10000) numberList.Add(70000 + p);
+                p = n * (2 * n - 1);
+                if (p > 1000 && p < 10000) numberList.Add(60000 + p);
+                p = n * (3 * n - 1) / 2;
+                if (p > 1000 && p < 10000) numberList.Add(50000 + p);
+                p = n * n;
+                if (p > 1000 && p < 10000) numberList.Add(40000 + p);
+                p = n * (n + 1) / 2;
+                if (p > 1000 && p < 10000) numberList.Add(30000 + p);
 
-                for(int i = 3; i <= 8; i ++) if (pList[i] > 999 && pList[i] < 10000) 
-                    numberListList[i].Add(pList[i]);
-                n ++;
+                n++;
             }
 
-            for(int i = 3; i <= 8; i ++) 
+            for (int i = 3; i <= 8; i++)
             {
-                Console.Write($"Count of 4-digit {nameList[i]} numbers: {numberListList[i].Count}: ");
-                foreach(int p in numberListList[i])
+                int count = numberList.Where(x => x / 10000 == i).Count();
+                Console.WriteLine($"P{i} list count: {count}");
+            }
+
+            bool bFound = false;
+            int sum = 0;
+            foreach (int p1 in numberList.Where(x => x / 10000 == 8))
+            {
+                List<int> p2List = numberList.Where(x => (x / 100 % 100 == p1 % 100) && x / 10000 != p1 / 10000).ToList();
+                if (p2List.Count== 0) continue;
+                foreach (int p2 in p2List)
                 {
-                    Console.Write($"{p} ");
+                    List<int> p3List = numberList.Where(x => (x / 100 % 100 == p2 % 100) && x / 10000 != p1 / 10000 && x / 10000 != p2 / 10000).ToList();
+                    if (p3List.Count== 0) continue;
+                    foreach(int p3 in p3List)
+                    {
+                        List<int> p4List = numberList.Where(x => (x / 100 % 100 == p3 % 100) && x / 10000 != p1 / 10000 && x / 10000 != p2 / 10000 && x / 10000 != p3 / 10000).ToList();
+                        if (p4List.Count== 0) continue;
+                        foreach (int p4 in p4List)
+                        {
+                            List<int> p5List = numberList.Where(x => (x / 100 % 100 == p4 % 100) && x / 10000 != p1 / 10000 && x / 10000 != p2 / 10000 && x / 10000 != p3 / 10000 && x / 10000 != p4 / 10000).ToList();
+                            if (p5List.Count== 0) continue;
+                            foreach (int p5 in p5List)
+                            {
+                                List<int> p6List = numberList.Where(x => (x / 100 % 100 == p5 % 100) && x / 10000 != p1 / 10000 && x / 10000 != p2 / 10000 && x / 10000 != p3 / 10000 && x / 10000 != p4 / 10000 && x / 10000 != p5 / 10000).ToList();
+                                if (p6List.Count== 0) continue;
+                                foreach (int p6 in p6List)
+                                {
+                                    if (p6 % 100 == p1 / 100 % 100)
+                                    { 
+                                        sum = p1 % 10000 + p2 % 10000 + p3 % 10000 + p4 % 10000 + p5 % 10000 + p6 % 10000;
+                                        Console.WriteLine($"({p1/10000}){p1% 10000} ({p2/10000}){p2%10000} ({p3/10000}){p3%10000} ({p4/10000}){p4%10000} ({p5/10000}){p5%10000} ({p6/10000}){p6%10000}");
+                                        bFound = true; 
+                                        break; 
+                                    }
+                                }
+                                if (bFound) break;
+                            }
+                            if (bFound) break;
+                        }
+                        if (bFound) break;
+                    }
+                    if (bFound) break;
                 }
-                Console.WriteLine();
+                if (bFound) break;
             }
 
-            long sum = 0;
-            string answer = sum.ToString();
-            return answer;
+            return sum.ToString();
         }
-
     }
 }
