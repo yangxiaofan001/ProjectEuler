@@ -67,10 +67,22 @@ Find the smallest cube for which exactly five permutations of its digits are cub
 
         public override string Solution1()
         {
+            string answer = @"
+assume the upperlimit is 99999^3 - not proved, if a solution is not found, need to extend the upperlimit (not coded)
+init n as 345, where 345^3 is the first cube has exactly three permutations of its digits which are also cube.
+
+increase n by 1 in each loop, 
+add the kv pair [n, int[] sorted digit array of n] to a dictionary
+look back in the dictionary, find cubes that have the same sorted digit array
+if 4 such cubes are found, return the smallest number among the 4 + 1 numbers
+            ";
+
+            Console.WriteLine(answer);
+
+
+
             Dictionary<long, int[]> cubeList = new Dictionary<long, int[]>();
             long n = 345;
-
-            string answer = "";
 
             while(n < 99999)
             {

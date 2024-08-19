@@ -98,6 +98,7 @@ Find the lowest sum for a set of five primes for which any two primes concatenat
         }
         public override string Solution1()
         {
+            return "testing solution 2...";
             int upperLimit = 10000;
             int increament = 5000;
             List<List<long>> listOfSets = new List<List<long>>();

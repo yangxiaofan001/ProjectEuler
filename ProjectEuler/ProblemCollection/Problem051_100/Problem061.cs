@@ -54,6 +54,26 @@ Find the sum of the only ordered set of six cyclic 4-digit numbers for which eac
 
         public override string Solution1()
         {
+string answer = @"
+Add all Figurate Numbers p3, p4, p5, p6 p7, p8 in a same List
+    p3 + 30000, p4 + 40000, ..., p8 + 80000
+
+Loop through each 8xxxx numbers (1st number) in the list (works the same as loop through any nxxxx numbers, 8xxxx is chosen because it has the least count)
+    use LINQ to find numbers: first 2 digits are the same as the last 2 digits of the 1st number, and not in the already used 8xxxx list
+    loop through all these numbers
+        use LINQ to find numbers: first 2 digits are the same as the last 2 digits of the 2nd number, and not in the 2 already used lists
+        loop through all these numbers
+            use LINQ to find numbers: first 2 digits are the same as the last 2 digits of the 3rd number, and not in the 3 already used lists
+            loop through all these numbers
+                use LINQ to find numbers: first 2 digits are the same as the last 2 digits of the 4th number, and not in the 4 already used lists
+                loop through all these numbers
+                    use LINQ to find numbers: first 2 digits are the same as the last 2 digits of the 5th number, and not in  5 already used lists
+                    loop through all these numbers
+                        if first 2 digits of the 1st number are the same as the last 2 digits of the 6th number
+                            a solution is found
+";            
+
+            Console.WriteLine(answer);
             List<int> numberList = new List<int>();
 
             int n = 1;
