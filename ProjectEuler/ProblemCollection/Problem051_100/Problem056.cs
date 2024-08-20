@@ -51,6 +51,9 @@ Considering natural numbers of the form, a^b, where a, b < 100, what is the maxi
         int upperLimit = 100;
         public override string Solution1()
         {
+            string idea = "No idea. Brutal force using c# System.Numeric.BigInteger";
+            Console.WriteLine(idea);
+            
             int maxDigitSum = 0;
             int m_a = 0;
             int m_b = 0;

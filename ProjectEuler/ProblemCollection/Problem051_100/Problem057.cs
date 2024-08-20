@@ -61,6 +61,11 @@ In the first one-thousand expansions, how many fractions contain a numerator wit
 
         public override string Solution1()
         {
+            string idea = @"
+Idea: In each expansion e(n), numerator en(n) = en(n - 1) + 2 * ed(n-1), and denomenator ed(n) = en(n - 1) + ed(n-1)
+            ";            
+            Console.WriteLine(idea);
+
             BigInteger lastNumerator = 1;
             BigInteger lastDenominator = 1;
             long count = 0;

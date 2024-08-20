@@ -41,7 +41,7 @@ Find the lowest sum for a set of five primes for which any two primes concatenat
         List<long> primes;
         List<bool> primeChecker;
 
-        int ConcateTwoNumbers(int a, int b)
+        long ConcateTwoNumbers(long a, long b)
         {
             int powerOf10 = 1;
             while (powerOf10 < b) powerOf10 *= 10;
@@ -49,14 +49,44 @@ Find the lowest sum for a set of five primes for which any two primes concatenat
             return a * powerOf10 + b;
         }
 
-        private bool IsValidPair(int p1, int p2)
+        private bool IsValidPair(long p1, long p2)
         {
-            return primeChecker[ConcateTwoNumbers(p1, p2)] &&
-                primeChecker[ConcateTwoNumbers(p2, p1)];
+            long p1p2 = ConcateTwoNumbers(p1, p2);
+            long p2p1 = ConcateTwoNumbers(p2, p1);
+            try
+            {
+                bool isp1p2Prime = p1p2 < primeChecker.Count ? primeChecker[(int)p1p2] : Utils.IsPrime(p1p2);
+                bool isp2p1Prime = p2p1 < primeChecker.Count ? primeChecker[(int)p2p1] : Utils.IsPrime(p2p1);
+                return isp1p2Prime && isp2p1Prime;
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine($"{p1} {p2} {ex.Message}");
+                throw;
+            }
+
+
+
         }
 
         public override string Solution1()
         {
+            string idea = @"
+from the question, upperlimit is unknown, check starts with upperlimit = 1000, the increase the upperlimit by 1000 until a solution is found.
+
+1. prepare all prime numbers under 10^8 - here is still an assumption that the solutionn is under 10^8, may need to extend.
+2. init upperlimit as 1000, loop until a solution is found. In each loop, increase the upperlimit by 1000
+    loop through all primes under limit except for the 4 largest - p1
+        loop through all primes under limit except for the 3 largest - p2 > p1, verify p1p2 and p2p1 are both prime
+            loop through all primes under limit except for the 2largest - p3 > p2, verify p1p3, p3p1, p2p3, and p3p2 are both prime
+                loop through all primes under limit except for the 1 largest - p4 > p3, verify p1p4, p4p1, p2p4, p4p2, p3p4 and p4p3 are all prime
+                    loop through all primes under limit - p5 > p4, verify p1p5, p5p1, p2p5, p5p2, p3p5, p5p3, p4p5 and p5p4 are all prime
+                        return set of 5
+3. now we have a set, not neccessarily the set with smallest sum
+4. repeat step 2, only return the set with a sum smaller
+            ";
+
+            Console.WriteLine(idea);
 
             primes = new List<long>();
             primeChecker = new List<bool>();
@@ -68,14 +98,12 @@ Find the lowest sum for a set of five primes for which any two primes concatenat
             primes.Remove(2);
             primes.Remove(5);
 
-
             int limit = 0;
             List<List<int>> setsOfFive = new List<List<int>>();
 
             while (setsOfFive.Count == 0)
             {
                 limit += 1000;
-                // Console.WriteLine($"looking for sets of 5 within the limit of {limit}:");
                 setsOfFive = LookForSetsOfFive(limit);
             }
 
@@ -94,27 +122,38 @@ Find the lowest sum for a set of five primes for which any two primes concatenat
 
             limit = sum;
 
-            Console.WriteLine($"now we have a definite limit {limit}");
+            Console.WriteLine($"now we have a definite limit {limit}, the sum should not exceed this number either");
 
-            setsOfFive = LookForSetsOfFive_sumlimitknown(limit);
-            sum = int.MaxValue;
-            foreach (List<int> set in setsOfFive)
+            setsOfFive = LookForSetsOfFive(limit, true);
+            if (setsOfFive.Count == 0)
             {
-                int setSum = 0;
-                foreach (int n in set)
-                {
-                    Console.Write($"{n} ");
-                    setSum += n;
-                }
-                Console.WriteLine($": {setSum}");
-                sum = Math.Min(sum, setSum);
+                Console.WriteLine($"No new set of five primes were found. The answer is {limit}");
+                sum = limit;
             }
+            else
+            {
+                Console.WriteLine($"New set(s) of five primes were found.");
 
+                sum = int.MaxValue;
+                foreach (List<int> set in setsOfFive)
+                {
+                    int setSum = 0;
+                    foreach (int n in set)
+                    {
+                        Console.Write($"{n} ");
+                        setSum += n;
+                    }
+                    Console.WriteLine($": {setSum}");
+                    sum = Math.Min(sum, setSum);
+                }
+
+                Console.WriteLine($"The answer is {sum}");
+            }
 
             return sum.ToString();
         }
 
-        private List<List<int>> LookForSetsOfFive(int limit)
+        private List<List<int>> LookForSetsOfFive(long limit, bool subLimitKnown = false)
         {
             List<List<int>> setsOfFive = new List<List<int>>();
             List<long> primesUnderLimits = primes.Where(p => p <= limit).ToList();
@@ -125,84 +164,30 @@ Find the lowest sum for a set of five primes for which any two primes concatenat
                 for (int i1 = 0; i1 < primesUnderLimits.Count - 4; i1++)
                 {
                     int p1 = (int)primesUnderLimits[i1];
-                    // if (p1 >= limit / 5) 
-                    //     break;
-                    for (int i2 = i1 + 1; i2 < primesUnderLimits.Count - 3; i2++)
-                    {
-                        int p2 = (int)primesUnderLimits[i2];
-                        // if (p2 >= (limit - p1) / 4) 
-                        //     break;
-                        if (!IsValidPair(p1, p2)) continue;
-                        for (int i3 = i2 + 1; i3 < primesUnderLimits.Count - 2; i3++)
-                        {
-                            int p3 = (int)primesUnderLimits[i3];
-                            // if (p3 >= (limit - p1 - p2) / 3) 
-                            //     break;
-                            if (!IsValidPair(p2, p3) || !IsValidPair(p1, p3)) continue;
-                            for (int i4 = i3 + 1; i4 < primesUnderLimits.Count - 1; i4++)
-                            {
-                                int p4 = (int)primesUnderLimits[i4];
-                                // if (p4 >= (limit - p1 - p2 - p3) / 2) 
-                                //     break;
-                                if (!IsValidPair(p1, p4) || !IsValidPair(p2, p4) || !IsValidPair(p3, p4)) continue;
-                                for (int i5 = i4 + 1; i5 < primesUnderLimits.Count; i5++)
-                                {
-                                    int p5 = (int)primesUnderLimits[i5];
-                                    // if (p5 >= (limit - p1 - p2 - p3 - p4)) 
-                                    //     break;
-                                    if (IsValidPair(p1, p5) && IsValidPair(p2, p5) && IsValidPair(p3, p5) && IsValidPair(p4, p5))
-                                    {
-                                        setsOfFive.Add(new List<int> { p1, p2, p3, p4, p5 });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch
-            {
-                return setsOfFive;
-            }
-
-            return setsOfFive;
-        }
-
-        private List<List<int>> LookForSetsOfFive_sumlimitknown(int sumLimit)
-        {
-            List<List<int>> setsOfFive = new List<List<int>>();
-            List<long> primesUnderLimits = primes.Where(p => p <= sumLimit).ToList();
-            Console.WriteLine($"calculating within limit of {sumLimit}, {primesUnderLimits.Count} primes");
-            try
-            {
-
-                for (int i1 = 0; i1 < primesUnderLimits.Count - 4; i1++)
-                {
-                    int p1 = (int)primesUnderLimits[i1];
-                    if (p1 > sumLimit / 5)
+                    if (subLimitKnown && p1 >= limit / 5)
                         break;
                     for (int i2 = i1 + 1; i2 < primesUnderLimits.Count - 3; i2++)
                     {
                         int p2 = (int)primesUnderLimits[i2];
-                        if (p2 > (sumLimit - p1) / 4)
+                        if (subLimitKnown && p2 >= (limit - p1) / 4)
                             break;
                         if (!IsValidPair(p1, p2)) continue;
                         for (int i3 = i2 + 1; i3 < primesUnderLimits.Count - 2; i3++)
                         {
                             int p3 = (int)primesUnderLimits[i3];
-                            if (p3 > (sumLimit - p1 - p2) / 3)
+                            if (subLimitKnown && p3 >= (limit - p1 - p2) / 3)
                                 break;
                             if (!IsValidPair(p2, p3) || !IsValidPair(p1, p3)) continue;
                             for (int i4 = i3 + 1; i4 < primesUnderLimits.Count - 1; i4++)
                             {
                                 int p4 = (int)primesUnderLimits[i4];
-                                if (p4 > (sumLimit - p1 - p2 - p3) / 2)
+                                if (subLimitKnown && p4 >= (limit - p1 - p2 - p3) / 2)
                                     break;
                                 if (!IsValidPair(p1, p4) || !IsValidPair(p2, p4) || !IsValidPair(p3, p4)) continue;
                                 for (int i5 = i4 + 1; i5 < primesUnderLimits.Count; i5++)
                                 {
                                     int p5 = (int)primesUnderLimits[i5];
-                                    if (p5 > (sumLimit - p1 - p2 - p3 - p4))
+                                    if (subLimitKnown && p5 >= (limit - p1 - p2 - p3 - p4))
                                         break;
                                     if (IsValidPair(p1, p5) && IsValidPair(p2, p5) && IsValidPair(p3, p5) && IsValidPair(p4, p5))
                                     {

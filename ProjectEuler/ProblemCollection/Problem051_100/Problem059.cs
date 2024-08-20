@@ -46,6 +46,14 @@ Your task has been made easy, as the encryption key consists of three lower case
 
         public override string Solution1()
         {
+            string idea = @"
+the key is 'the plain text must contain common English words'
+
+To verify this, check the decrypted text contains ' a ' and ' the '
+            ";
+
+            Console.WriteLine(idea);
+            
             System.IO.StreamReader sr = new StreamReader("Files/0059_cipher.txt");
             string line = sr.ReadLine();
             sr.Close();
@@ -55,37 +63,6 @@ Your task has been made easy, as the encryption key consists of three lower case
             {
                 codeArray[i] = uint.Parse(codeCharArray[i]);
             }
-            // Console.WriteLine($"{codeArray.Length} characters");
-            // List<string> possiblePassList = new List<string>();
-            // uint [] di = new uint [6];
-            // for(char p1 = 'a'; p1 <= 'z'; p1++)
-            // {
-            //     for(char p2 = 'a'; p2 <= 'z'; p2++)
-            //     {
-            //         for(char p3 = 'a'; p3 <= 'z'; p3++)
-            //         {
-            //             di[0] = codeArray[0] ^ p1;
-            //             di[3] = codeArray[3] ^ p1;
-            //             di[1] = codeArray[1] ^ p2;
-            //             di[4] = codeArray[4] ^ p2;
-            //             di[2] = codeArray[2] ^ p3;
-            //             di[5] = codeArray[5] ^ p3;
-            //             bool possiblepass = true;
-            //             for(int i = 0; i < 6; i ++)
-            //             {
-            //                 if (di[i] < 32 && di[i] != 9 && di[i] != 10 && di[i] != 13)
-            //                     possiblepass = false;
-            //             }
-            //             if (possiblepass)
-            //             possiblePassList.Add(p1.ToString() + p2.ToString() + p3.ToString());    
-            //         }
-            //     }
-            // }
-
-            // foreach(string password in possiblePassList)
-            // {
-            //     Console.WriteLine(password);
-            // }
 
             uint [] password = new uint[3];
             bool solved = false;

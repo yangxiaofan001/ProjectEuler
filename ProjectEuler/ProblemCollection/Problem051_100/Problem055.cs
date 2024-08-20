@@ -73,6 +73,9 @@ NOTE: Wording was modified slightly on 24 April 2007 to emphasise the theoretica
 
         public override string Solution1()
         {
+            string idea = "No idea. Brutal force using c# System.Numeric.BigInteger";
+            Console.WriteLine(idea);
+                        
             int lychrelNumberCount = 0;
             for(System.Numerics.BigInteger n = 1; n < 10000; n ++)
             {
