@@ -73,44 +73,86 @@ How many continued fractions for N <= 10000 have an odd period?
         public override string Solution1()
         {
             string answer = @"
-Learning Square Root Continued Fraction...
+Calculation of Square Root Continued Fraction:
+
+sqrt(N) = a0 + f0
+f0 = 1 / (a1 + f1)
+f1 = 1 / (a2 + f2)
+f2 = 1 / (a3 + f3)
+...
+
+Each a{x} is an integer, each f{x} can be represented by (d1 sqrt(N) + d2) / d3. d1 is always a factor of d2, and a factor of d3, so the expression can be simplified
+
+keep calculating (a, d1, d2, d3) for f1, f2, f3, ..., until f{x} has the same [d1, d2, d3] as f0, from where the calculation will repeat.
+
+Example sqrt(23) = [4, (1, 3, 1, 8)]:
+
+N = 23, a0 = 4
+
+f0 = s23 - 4        d1 = 1, d2 = -4, d3 = 1
+
+calculate a1 and f1:
+    a1 + f1
+    = 1 / f0
+    = 1 / (s23 - 4)
+    = (s23 + 4) / 7
+    a1 is the integer part of (a1 + f1)
+    a1 = (int) ((s23 + 4) / 7) = (int)((a0 + 4)/7) = (int)((4 + 4)/7) = 1
+    f1 = (s23 + 4) / 7 - a1 = (s23 + 4) / 7 - 1 = (s23 - 3) / 7      d1 = 1, d2 = -3, d3 = 7
+
+calculate a2 and f2
+    a2 + f2 
+    = 1 / f1
+    = 1 / ((s23 - 3) / 7)
+    = 7 / (s23 - 3)
+    = 7(s23 + 3) / 14
+    = (s23 + 3) /2
+    a2 is the integer part of (a2 + f2)
+    a2 = (int)((s23 + 3) /2) = (int)((a0 + 3) /2) = 3
+    f2 = (s23 + 3) / 2 - a2 = (s23 + 3) / 2 - 3 = (s23 - 3) / 2         d1 = 1, d2 = -3, d3 = 2
+
+calculate a3 and f3
+    a3 + f3
+    = 1 / f2
+    = 1 / ((s23 - 3) / 2)    
+    = 2 / (s23 - 3)
+    = 2 (s23 + 3) / 14
+    = (2s23 + 6) / 14
+    a3 is the integer part of a3 + f3
+    a3 = (int)((2s23 + 6) / 14) = (int)((2a0 + 6) / 14) = 1
+    f3 = (2s23 + 6) / 14 - a3 = (2s23 + 6) / 14 - 1 = (2s23 - 8) / 14 = (s23 - 4) / 7       d1 = 1, d2 = -4, d3 = 7
+
+calculate a4, f4
+    a4 + f4
+    = 1 / f3
+    = 1 / ((s23 - 4) / 7)
+    = 7 / (s23 - 4)
+    = 7(s23 + 4) / 7
+    = s23 + 4
+    a4 is the integer part of a4 + f4
+    a4 = (int)(s23 + 4) = (int)(a0 + 4) = 8
+    f4 = s23 + 4 - a4 = s23 + 4 - 8 = s23 - 4                   d1 = 1, d2 = -4, d3 = 1
+
+f4 has the same {d1, d2, d3} as f0, stop here
 ";
             Console.WriteLine(answer);
 
-            // CalcSqrt(23, 4);
-
-            // Dictionary<int, int> NCollection = new Dictionary<int, int>
-            // {
-            //     {2, 1},
-            //     {3, 1},
-            //     {5, 2},
-            //     {6, 2},
-            //     {7, 2},
-            //     {8, 2},
-            //     {10, 3},
-            //     {11, 3},
-            //     {12, 3},
-            //     {13, 3},
-            // };
-
             int count = 0;
-            for(int n = 1; n * n <= upperLimit; n ++)  
+            for(int n = 1; n * n < upperLimit; n ++)  
             {
                 int N = n * n + 1;
                 while (N < (n + 1) * (n + 1))
                 {
                     List<int> aList = CalcSqrtAList(N, n);
+                    // Console.Write($"{N} = [{n}, (");
+                    // foreach (int a in aList)
+                    //     Console.Write($"{a}, ");
+                    // Console.WriteLine(")]");
+                    
                     if (aList.Count % 2 == 1) count ++;
                     N ++;
                 }
 
-                // List<int> aList = CalcSqrtAList(k, NCollection[k]);
-                // Console.Write($"{k} = [{NCollection[k]}, (");
-                // foreach (int a in aList)
-                // {
-                //     Console.Write($"{a}, ");
-                // }
-                // Console.WriteLine(")]");
             }
 
 
