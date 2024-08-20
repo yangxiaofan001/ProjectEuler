@@ -68,6 +68,7 @@ How many continued fractions for N <= 10000 have an odd period?
                 return 64;
             }
         }
+        int upperLimit = 10000;
 
         public override string Solution1()
         {
@@ -76,9 +77,44 @@ Learning Square Root Continued Fraction...
 ";
             Console.WriteLine(answer);
 
-            CalcSqrt(23, 4);
+            // CalcSqrt(23, 4);
 
-            return answer;
+            // Dictionary<int, int> NCollection = new Dictionary<int, int>
+            // {
+            //     {2, 1},
+            //     {3, 1},
+            //     {5, 2},
+            //     {6, 2},
+            //     {7, 2},
+            //     {8, 2},
+            //     {10, 3},
+            //     {11, 3},
+            //     {12, 3},
+            //     {13, 3},
+            // };
+
+            int count = 0;
+            for(int n = 1; n * n <= upperLimit; n ++)  
+            {
+                int N = n * n + 1;
+                while (N < (n + 1) * (n + 1))
+                {
+                    List<int> aList = CalcSqrtAList(N, n);
+                    if (aList.Count % 2 == 1) count ++;
+                    N ++;
+                }
+
+                // List<int> aList = CalcSqrtAList(k, NCollection[k]);
+                // Console.Write($"{k} = [{NCollection[k]}, (");
+                // foreach (int a in aList)
+                // {
+                //     Console.Write($"{a}, ");
+                // }
+                // Console.WriteLine(")]");
+            }
+
+
+            return count.ToString();
         }
 
         void CalcSqrt(int N, int a0)
@@ -100,8 +136,27 @@ Learning Square Root Continued Fraction...
 
             while(true)
             {
-                a = (int)(d3 * (a0 - d2) / (N - d2 * d2));
-                
+                // f0 = (d1 * s + d2) / d3
+               
+                // a + f = 1 / f0 = d3 / (d1 * s + d2) = (d3 * d1 * s - d3 * d2) / (d1 * d1 * N - d2 * d2)
+                int cd3 = d1 * d1 * N - d2 * d2;
+                // a = (int)((d3 * d1 * a0 - d3 * d2) / (d1 * d1 * N - d2 * d2))
+                a = (int)((d3 * d1 * a0 - d3 * d2) / cd3);
+                // f = (d3 * d1 * s - d3 * d2) / cd3 - a = 
+                d1 = d3 * d1;
+                d2 = -1 * d3 * d2 - a * cd3;
+                d3 = cd3;
+
+                if (d3 % d1 == 0 && d2 % d1 == 0)
+                {
+                    d3 /=d1;
+                    d2 /=d1;
+                    d1 = 1;
+                }
+                Console.WriteLine($"a = {a}");
+                Console.WriteLine($"f = ({d1} s + {d2}) / {d3}");
+// break;
+
             // Console.WriteLine("a1 + f1 = 1 / f0");
             // Console.WriteLine($"a1 + f1 = {d3} / {d1} * (sqrt({N}) + {d2})");
             // Console.WriteLine($"a1 + f1 = {d3} * (sqrt({N}) - {d2}) / {N - d2 * d2}");
@@ -122,6 +177,46 @@ Learning Square Root Continued Fraction...
             }
 
 
+        }
+
+        List<int> CalcSqrtAList(int N, int a0)
+        {
+            int d1_0 = 1;
+            int d2_0 = -1 * a0;
+            int d3_0 = 1;
+
+            int d1 = d1_0;
+            int d2 = d2_0;
+            int d3 = d3_0;
+
+            int a = a0;
+            List<int> aList = new List<int>();
+
+            while(true)
+            {
+                int cd3 = d1 * d1 * N - d2 * d2;
+                a = (int)((d3 * d1 * a0 - d3 * d2) / cd3);
+
+                d1 = d3 * d1;
+                d2 = -1 * d3 * d2 - a * cd3;
+                d3 = cd3;
+
+                if (d3 % d1 == 0 && d2 % d1 == 0)
+                {
+                    d3 /=d1;
+                    d2 /=d1;
+                    d1 = 1;
+                }
+
+                aList.Add(a);
+
+                if (d1 == d1_0 && d2 == d2_0 && d3 == d3_0)
+                {
+                    break;
+                }
+            }
+
+            return aList;
         }
     }
 }
