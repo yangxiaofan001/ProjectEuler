@@ -143,6 +143,30 @@ namespace EulerProject.ProblemCollection
 
         public override string Solution3()
         {
+            string idea = @"
+Only the total is required, not the path.
+
+Starting from the bottom, save the larger sum on line n - 1 for each number plus each of the two adjacent numbers on line n
+
+For example, to find the largest sum of
+3
+7 4
+2 4 6
+8 5 9 3
+
+starting from line 4 - 1
+3
+7 4
+10 13 15
+
+then
+3
+20 19
+
+then
+23
+";
+            Console.WriteLine(idea);
             List<List<int>> intPyramid = new List<List<int>>();
 
             foreach (string level in stringPyramid)

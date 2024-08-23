@@ -55,7 +55,7 @@ namespace EulerProject
                         stopWatch.Start();
                         answer = solution.Invoke(worker, null).ToString();
                         stopWatch.Stop();
-                        Console.WriteLine("\nProblem " + problemNumber.ToString() + " " + solution.Name + "  answer = " + answer + ". Done in " + stopWatch.ElapsedMilliseconds.ToString() + " milliseconds");
+                        Console.WriteLine("\nProblem " + problemNumber.ToString() + " " + solution.Name + "  answer = " + answer + ". Done in " + stopWatch.ElapsedMilliseconds.ToString() + " milliseconds.\n");
                     }
                     catch (Exception ex)
                     {
