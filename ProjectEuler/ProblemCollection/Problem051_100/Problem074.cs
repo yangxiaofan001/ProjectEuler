@@ -34,20 +34,15 @@ namespace EulerProject.ProblemCollection
         public override string Solution1()
         {
             string idea = @"Just do it. 1136 milliseconds.";
-Console.WriteLine(idea);
+            Console.WriteLine(idea);
 
-int answer = 0;
+            int answer = 0;
             int [] factorials = new int[10];
             factorials[0] = 1;
-            for(int i = 1; i < 10; i ++)
-                factorials[i] = i * factorials[i - 1];
-
-            int [] chainLengthArray = new int[upperLimit + 1];
-            for(int i = 0; i <= upperLimit; i++) chainLengthArray[i] = 0;
+            for(int i = 1; i < 10; i ++) factorials[i] = i * factorials[i - 1];
 
             for(int i = 0; i <= upperLimit; i ++)
             {
-
                 List<int> chain = new List<int>();
                 int sum = 0;
                 int x = i;
@@ -58,10 +53,7 @@ int answer = 0;
                         sum += factorials[c - '0'];
 
                     if (chain.Contains(sum))
-                    {
-                        chainLengthArray[i] = chain.Count;
                         break;
-                    } 
 
                     chain.Add(sum);
                     x = sum;
