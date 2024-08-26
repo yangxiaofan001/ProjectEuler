@@ -54,6 +54,21 @@ namespace EulerProject
             return list;
         }
 
+        public static List<int> GetAllPhiUnderP(int upperLimit)
+        {
+            int[] phiArray = new int[upperLimit + 1];
+            phiArray[0] = 0;
+            phiArray[1] = 1;
+            for(int i = 2; i <= upperLimit; i++) phiArray[i] = i - 1;
+            for(int i = 2; i <=upperLimit; i ++)
+            {
+                for(int j = 2 * i; j <= upperLimit; j += i)
+                    phiArray[j] -= phiArray[i];
+            }
+
+            return phiArray.ToList();
+        }
+
         public static List<long> IntSieveOfEratosthenes(int p)
         {
             List<bool> bList = new List<bool>();

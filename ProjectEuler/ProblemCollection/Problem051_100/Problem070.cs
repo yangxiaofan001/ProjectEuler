@@ -49,15 +49,7 @@ Console.WriteLine(idea);
 
 DateTime dt1 = DateTime.Now;
 
-            int[] phiArray = new int[upperLimit + 1];
-            phiArray[0] = 0;
-            phiArray[1] = 1;
-            for(int i = 2; i <= upperLimit; i++) phiArray[i] = i - 1;
-            for(int i = 2; i <=upperLimit; i ++)
-            {
-                for(int j = 2 * i; j <= upperLimit; j += i)
-                    phiArray[j] -= phiArray[i];
-            }
+            List<int> phiArray = Utils.GetAllPhiUnderP(upperLimit);
 DateTime dt2 = DateTime.Now;
 Console.WriteLine($"1. Calculate phi from 2 to {upperLimit}: {(dt2 - dt1).TotalMilliseconds}");
 dt1 = DateTime.Now;
