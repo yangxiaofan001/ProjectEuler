@@ -15,6 +15,11 @@ public class Game
         Initialize(initialNumbers);
     }
 
+    public int CandidatesCount
+    {
+        get { return this.Nodes.Sum(n => n.PossibleNumbers.Count); }
+    }
+
     public void Initialize(int[] initialNumbers)
     {
         if (initialNumbers == null || initialNumbers.Length != 81)
@@ -249,5 +254,86 @@ public class Game
         }
 
         return possibleNumbersCount > 0 ? -1 : 1;
+    }
+
+    int Tech01_NakedSingle()
+    {
+        int prevPossibleNumbersCount = CandidatesCount;
+        while (true)
+        {
+            List<Node> nakesSingleNodes = Nodes.Where(n => n.PossibleNumbers.Count == 1).ToList();
+            foreach (Node n in nakesSingleNodes) { n.Number = n.PossibleNumbers[0]; }
+            int possibleNumbersCount = CandidatesCount;
+            if (possibleNumbersCount == 0) return 1; // solved game
+            if (possibleNumbersCount == prevPossibleNumbersCount) break; // no further naked singles
+            prevPossibleNumbersCount = possibleNumbersCount;
+        }
+
+        return 0;
+    }
+
+    int Tech02_HiddenSingle()
+    {
+        int prevPossibleNumbersCount = CandidatesCount;
+        while (true)
+        {
+            foreach (Node node in Nodes.Where(n => n.PossibleNumbers.Count > 1))
+            {
+                bool isHiddenSingle = false;
+                int candidate = 0;
+                foreach (int number in node.PossibleNumbers)
+                {
+                    if (!Nodes.Any(n => n.Row == node.Row && n.Index != node.Index && n.PossibleNumbers.Contains(number))
+                    || !Nodes.Any(n => n.Column == node.Column && n.Index != node.Index && n.PossibleNumbers.Contains(number))
+                    || !Nodes.Any(n => n.Zone == node.Zone && n.Index != node.Index && n.PossibleNumbers.Contains(number))
+                    )
+                    {
+                        isHiddenSingle = true;
+                        break;
+                    }
+                }
+                if (isHiddenSingle) node.Number = candidate;
+            }
+
+            if (Tech01_NakedSingle() == 1) return 1;
+
+            int possibleNumbersCount = CandidatesCount;
+            if (possibleNumbersCount == 0) return 1; // solved game
+            if (possibleNumbersCount == prevPossibleNumbersCount) break; // no further naked singles
+            prevPossibleNumbersCount = possibleNumbersCount;
+        }
+
+        return 0;
+
+    }
+
+    int Tech03_NakedPair() { return 0; }
+
+    int Tech04_PointingPairOrTriple() { return 0; }
+
+    int Tech05_ClaimingPairOrTriple() { return 0; }
+
+    int Tech06_NakedTripple() { return 0; }
+
+    int Tech07_XWing() { return 0; }
+
+    int Tech08_HiddePair() { return 0; }
+
+    int Tech09_NakesQuad() { return 0; }
+
+    int SolveAll()
+    {
+        while (true)
+        {
+            // tech01 - naked single
+            if (Tech01_NakedSingle() == 1) return 1;
+
+            // tech02 - hidden single
+            if (Tech02_HiddenSingle() == 1) return 1;
+            
+            if (Tech01_NakedSingle() == 1) return 1;
+
+        }
+
     }
 }

@@ -71,7 +71,7 @@ Game 49 cannot be solved by easy elimination
 	When a pair of candidates only appears in two cells of the same row/column/cell, but these 2 candidates are not the only candidaes in the 2 cells.
 
 	Able to remove other candidated from the 2 cells, yielding a naked pair
-	The able to remove the 2 candidateds from other cells
+	Then able to remove the 2 candidateds from other cells
 
 9. Naked Quads
 	same as naked pair, naked tiple; but with four cndiddates and four cells
