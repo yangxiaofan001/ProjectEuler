@@ -12,7 +12,7 @@ namespace EulerProject
         {
             List<int[]> sampleGames = ReadSampleData();
 
-            for(int i = 0; i < sampleGames.Count; i ++)
+            for(int i = 6; i < 7; i ++)
             {
                 Game game = new Game(sampleGames[i]);
                 game.Id = i;
@@ -23,6 +23,11 @@ namespace EulerProject
                 Console.WriteLine(msg);
 
                 game.Print($"game{i}_log01.txt");
+
+                Console.WriteLine("Step by step:");
+                int endResult = game.SolveStepByStep();
+
+                Console.WriteLine(endResult == 1 ? "Game is solved." : "Cannot solve the game.");
             }
         }
 

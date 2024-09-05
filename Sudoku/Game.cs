@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
+using System.Runtime.Serialization.Formatters;
 
 public class Game
 {
@@ -256,84 +259,200 @@ public class Game
         return possibleNumbersCount > 0 ? -1 : 1;
     }
 
-    int Tech01_NakedSingle()
+    public int Tech01_NakedSingle()
     {
-        int prevPossibleNumbersCount = CandidatesCount;
-        while (true)
+        Node nakedSingleNode = Nodes.FirstOrDefault(n => n.PossibleNumbers.Count == 1);
+        if (nakedSingleNode != null)
         {
-            List<Node> nakesSingleNodes = Nodes.Where(n => n.PossibleNumbers.Count == 1).ToList();
-            foreach (Node n in nakesSingleNodes) { n.Number = n.PossibleNumbers[0]; }
-            int possibleNumbersCount = CandidatesCount;
-            if (possibleNumbersCount == 0) return 1; // solved game
-            if (possibleNumbersCount == prevPossibleNumbersCount) break; // no further naked singles
-            prevPossibleNumbersCount = possibleNumbersCount;
+            nakedSingleNode.Number = nakedSingleNode.PossibleNumbers[0];
+            return 1;
         }
-
-        return 0;
+        else
+        {
+            return -1;
+        }
     }
 
-    int Tech02_HiddenSingle()
+    public int Tech02_HiddenSingle()
     {
-        int prevPossibleNumbersCount = CandidatesCount;
-        while (true)
+        for (int i = 1; i <= 9; i++)
         {
-            foreach (Node node in Nodes.Where(n => n.PossibleNumbers.Count > 1))
+            for (int checkingType = 0; checkingType < 3; checkingType++)
             {
-                bool isHiddenSingle = false;
-                int candidate = 0;
-                foreach (int number in node.PossibleNumbers)
+                for (int j = 0; j < 9; j++)
                 {
-                    if (!Nodes.Any(n => n.Row == node.Row && n.Index != node.Index && n.PossibleNumbers.Contains(number))
-                    || !Nodes.Any(n => n.Column == node.Column && n.Index != node.Index && n.PossibleNumbers.Contains(number))
-                    || !Nodes.Any(n => n.Zone == node.Zone && n.Index != node.Index && n.PossibleNumbers.Contains(number))
-                    )
+                    Node[] nodes = Nodes.Where(n => n.PossibleNumbers.Contains(i)
+                    && (checkingType == 0 ? n.Row : (checkingType == 1 ? n.Column : n.Zone)) == j).ToArray();
+                    if (nodes.Length == 1)
                     {
-                        isHiddenSingle = true;
-                        break;
+                        nodes[0].Number = nodes[0].PossibleNumbers[0];
+                        return 1;
                     }
                 }
-                if (isHiddenSingle) node.Number = candidate;
+            }
+        }
+
+        return -1;
+    }
+
+    public int Tech03_NakedPair()
+    {
+        for (int checkingType = 0; checkingType < 3; checkingType++)
+        {
+            for (int checkingIndex = 0; checkingIndex < 9; checkingIndex++)
+            {
+                Node[] nodes = Nodes.Where(n => n.PossibleNumbers.Count == 2
+                                && (checkingType == 0 ? n.Row : (checkingType == 1 ? n.Column : n.Zone)) == checkingIndex).ToArray();
+
+                for (int n1Index = 0; n1Index < nodes.Length - 1; n1Index++)
+                {
+                    for (int n2Index = n1Index + 1; n2Index < nodes.Length; n2Index++)
+                    {
+                        Node n1 = nodes[n1Index];
+                        Node n2 = nodes[n2Index];
+
+                        if (n1.PossibleNumbers[0] == n2.PossibleNumbers[0] && n1.PossibleNumbers[1] == n2.PossibleNumbers[1])
+                        {
+                            // a pair is found, now check if can eliminate anything
+                            Node[] nodesWithCandidatesToBeRemoved =
+                                Nodes.Where(n =>
+                                        (checkingType == 0 ? n.Row : (checkingType == 1 ? n.Column : n.Zone)) == (checkingType == 0 ? n1.Row : (checkingType == 1 ? n1.Column : n1.Zone))
+                                        && n.Index != n1.Index && n.Index != n2.Index
+                                        && (n.PossibleNumbers.Contains(n1.PossibleNumbers[0]) || n.PossibleNumbers.Contains(n1.PossibleNumbers[1]))
+                                        ).ToArray();
+                            if (nodesWithCandidatesToBeRemoved.Length > 0)
+                            {
+                                // there are candidates to be removed in other node in the same row/column/zone
+                                foreach (Node n in nodesWithCandidatesToBeRemoved)
+                                {
+                                    n.PossibleNumbers.Contains(n1.PossibleNumbers[0]);
+                                    n.PossibleNumbers.Contains(n1.PossibleNumbers[1]);
+                                }
+
+                                return 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    public int Tech04_PointingPairOrTriple()
+    {
+        for (int zone = 0; zone < 9; zone++)
+        {
+            List<int> usedNumbers = Nodes.Where(n => n.Zone == zone && n.Number.HasValue).Select(n => n.Number.Value).ToList();
+            List<int> candidates = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            foreach (int number in usedNumbers) candidates.Remove(number);
+            List<Node> nodesInZone = Nodes.Where(n => n.Zone == zone && !n.Number.HasValue).ToList();
+
+            foreach (int number in candidates)
+            {
+                List<Node> nodes = nodesInZone.Where(n => n.PossibleNumbers.Contains(number)).ToList();
+                if (nodes.Count > 3 || nodes.Count < 2) continue;
+
+                for (int checkingtype = 0; checkingtype < 2; checkingtype++)
+                {
+                    bool isValid = true;
+                    Node n1 = nodes[0];
+                    for (int n2Index = 1; n2Index < nodes.Count; n2Index++)
+                    {
+                        Node n2 = nodes[n2Index];
+
+                        if ((checkingtype == 0 ? n1.Row : n1.Column) != (checkingtype == 0 ? n2.Row : n2.Column))
+                        {
+                            // not fit, check next number; 
+                            isValid = false;
+                            break;
+                        }
+                    }
+
+                    if (isValid)
+                    {
+                        List<Node> otherNodesInSameRowOrSameColumn = 
+                            Nodes.Where(n => n.Zone != zone 
+                                && (checkingtype == 0 ? n.Row : n.Column) == (checkingtype == 0 ? n1.Row : n1.Column)
+                                && n.PossibleNumbers.Contains(number)).ToList();
+                        if (otherNodesInSameRowOrSameColumn.Count > 0)
+                        {
+                            // able to move forward
+                            string stype = checkingtype == 0 ? "row": "column";
+                            int itype = checkingtype == 0 ? n1.Row : n1.Column;
+                            Console.WriteLine($"in zone {zone}, number {number} only appears in {stype} {itype}. Remove {number} from other cells in the same {stype}.");
+
+                            foreach (Node n in otherNodesInSameRowOrSameColumn)
+                                n.PossibleNumbers.Remove(number);
+
+                            return 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    public int Tech05_ClaimingPairOrTriple() { return -1; }
+
+    public int Tech06_NakedTripple() { return -1; }
+
+    public int Tech07_XWing() { return -1; }
+
+    public int Tech08_HiddePair() { return -1; }
+
+    public int Tech09_NakesQuad() { return -1; }
+
+    public int SolveStepByStep()
+    {
+
+        // techxx - solved game, return; solved 1 step, continue; cannot go further, next step
+        List<System.Reflection.MethodInfo> solvingTechnics = this.GetType().GetMethods().ToList();
+
+        int prevPossibleNumbersCount = this.CandidatesCount;
+        int endResult = 0;
+
+        while (true)
+        {
+            foreach (System.Reflection.MethodInfo mi in solvingTechnics)
+            {
+                if (mi.Name.StartsWith("Tech"))
+                {
+                    Console.Write($"Try one step of {mi.Name}: ");
+                    int ret = (int)(mi.Invoke(this, null));
+                    if (ret == 1) // moved forward
+                    {
+                        Console.WriteLine("moved forward, continue next step starting with technic 01.");
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Cannot move any further, try the next technic.");
+                    }
+
+                    // ret == -1, cannot go further, try next technic
+                }
+            }
+            int possibleNumbersCount = this.CandidatesCount;
+            if (possibleNumbersCount == prevPossibleNumbersCount)   // tried everything, cannot go any further
+            {
+                endResult = -1;
+                break;
             }
 
-            if (Tech01_NakedSingle() == 1) return 1;
+            if (possibleNumbersCount == 0)      // game is solved
+            {
+                endResult = 0;
+                break;
+            }
 
-            int possibleNumbersCount = CandidatesCount;
-            if (possibleNumbersCount == 0) return 1; // solved game
-            if (possibleNumbersCount == prevPossibleNumbersCount) break; // no further naked singles
+            // moved forward, continue
             prevPossibleNumbersCount = possibleNumbersCount;
         }
 
-        return 0;
-
-    }
-
-    int Tech03_NakedPair() { return 0; }
-
-    int Tech04_PointingPairOrTriple() { return 0; }
-
-    int Tech05_ClaimingPairOrTriple() { return 0; }
-
-    int Tech06_NakedTripple() { return 0; }
-
-    int Tech07_XWing() { return 0; }
-
-    int Tech08_HiddePair() { return 0; }
-
-    int Tech09_NakesQuad() { return 0; }
-
-    int SolveAll()
-    {
-        while (true)
-        {
-            // tech01 - naked single
-            if (Tech01_NakedSingle() == 1) return 1;
-
-            // tech02 - hidden single
-            if (Tech02_HiddenSingle() == 1) return 1;
-            
-            if (Tech01_NakedSingle() == 1) return 1;
-
-        }
-
+        return endResult;
     }
 }
