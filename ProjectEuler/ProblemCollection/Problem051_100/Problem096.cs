@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -52,12 +53,19 @@ namespace EulerProject.ProblemCollection.Problem051_100
                             Row = row,
                             GameId = gridId,
                             Column = c,
-                            Solved = (n != 0),
                             Zone = row / 3 * 3 + c / 3,
                             Number = n,
                             PossibleNumbers = new List<int>{1, 2, 3, 4, 5, 6, 7, 8, 9,}
                         };
-                        node.PossibleNumbers.Remove(n);
+
+                        if (node.Number.Value == 0)
+                        {
+                            node.Number = null;
+                        }
+                        else
+                        {
+                            node.PossibleNumbers.Clear();
+                        }
                         allNodes.Add(node);
                     }
                     row ++;
@@ -66,112 +74,90 @@ namespace EulerProject.ProblemCollection.Problem051_100
 
             sr.Close();
 
-            foreach(Node n in allNodes)
-            {
-                if (n.Solved) n.PossibleNumbers.Clear();
-            }
-
-
-
             SolveGame(1);
 
             return "";
         }
 
-        void PrintGame(int gameId, bool printtolog=false)
+        void PrintGame(int gameId, string logFileName = "log.txt")
         {
             List<Node> nodes= allNodes.Where(n => n.GameId == gameId).ToList();
             if (nodes.Count != 81) throw new Exception("a sudoku game has 9 rows, 9 clumns, in 9 zones");
 
-            for(int r = 0; r < 9; r ++)
+            string horizontalLine = "";
+            for(int i = 0; i < 60; i ++) horizontalLine = horizontalLine + "-";
+
+            for(int row = 0; row < 9; row ++)
             {
-                if (r % 3== 0) Console.WriteLine("--------------------------------------------------");
-                Console.WriteLine("--------------------------------------------------");
-
-                if (printtolog)
+                if (row % 3 == 0)
                 {
-                    if (r % 3== 0) LogWriteLine("--------------------------------------------------");
-                    LogWriteLine("--------------------------------------------------");
+                    Console.WriteLine(horizontalLine);
+                    LogWriteLine(horizontalLine, logFileName);
                 }
+                Console.WriteLine(horizontalLine);
+                LogWriteLine(horizontalLine, logFileName);
 
-                for(int x = 0; x < 3; x ++)
+                // display a row - 3 lines, each line is 1/3 of 9 columns
+                for(int lineNumber = 0; lineNumber < 3; lineNumber ++)
                 {
-                    for(int c = 0; c < 9; c++)
+                    string line = "";
+                    for(int column = 0; column < 9; column ++)
                     {
-                        if (c % 3 == 0) Console.Write("|");
-                        if (printtolog) 
+                        if (column % 3 == 0)
                         {
-                            if (c % 3 == 0) LogWrite("|");
+                            line = line + "|";
                         }
 
-                        Node n = nodes.FirstOrDefault(n => n.Row == r && n.Column == c);
-                        if (n.PossibleNumbers.Count > 0)
-                        {
-                            Console.Write(" ");
-                            for(int i = 3 * x; i < 3 + 3 * x && i < n.PossibleNumbers.Count; i ++) Console.Write(n.PossibleNumbers[i]);
-                            Console.Write(" ");
+                        line = line + "|";
 
-                            if (printtolog)
-                            {
-                                LogWrite(" ");
-                                for(int i = 3 * x; i < 3 + 3 * x && i < n.PossibleNumbers.Count; i ++) LogWrite(n.PossibleNumbers[i].ToString());
-                                LogWrite(" ");
-                            }
-                        }
-                        else if (x == 1)
+                        Node n = nodes.First(n => n.Row == row && n.Column == column);
+                        if (n.Number.HasValue)
                         {
-                            Console.Write($"  {n.Number}  ");
-                            if (printtolog)
-                            {
-                                LogWrite($"  {n.Number}  ");
-                            }
+                            string s = lineNumber == 1 ? "  " + n.Number.Value.ToString() + "  " : "     ";
+                            line = line + s;
                         }
                         else
                         {
-                            Console.Write("     ");
-                            if (printtolog)
+                            string numberString = "";
+                            for(int i = 0; i < 3 && i + 3 * lineNumber < n.PossibleNumbers.Count; i ++)
                             {
-                                LogWrite("     ");
+                                numberString = numberString + n.PossibleNumbers[i + 3 * lineNumber].ToString();
                             }
+                            line = line + " " + numberString;
+                            for(int x = 0; x < 4 - numberString.Length; x ++)
+                            line = line + " ";
                         }
-                            
                     }
-
-                    Console.WriteLine("");
-                    if (printtolog)
-                    {
-                        LogWriteLine("");
-                    }
-                }   
-                if (r % 3 > 0) Console.WriteLine("");  
-                if (printtolog)
-                {
-                    if (r % 3 > 0) LogWriteLine("");  
+                    
+                    line = line + "||";
+                    Console.WriteLine(line);
+                    LogWriteLine(line, logFileName);
+                    line = "";
                 }
             }
-            Console.WriteLine("---------------------------------------------");
-            if (printtolog)
-            {
-                LogWriteLine("---------------------------------------------");
-            }
+
+            Console.WriteLine(horizontalLine);
+            LogWriteLine(horizontalLine, logFileName);
+            Console.WriteLine(horizontalLine);
+            LogWriteLine(horizontalLine, logFileName);
         }
 
-        void InitLog()
+        void InitLog(string fileName = "log.txt")
         {
-            System.IO.StreamWriter sw = new System.IO.StreamWriter("log.txt", false);
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(fileName, false);
             sw.Close();
         }
 
-        void LogWrite(string msg)
+        void LogWrite(string msg, string fileName = "log.txt")
         {
-            System.IO.StreamWriter sw = new System.IO.StreamWriter("log.txt", true);
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(fileName, true);
             sw.Write(msg);
             sw.Close();
         }
 
-        void LogWriteLine(string msg)
+        void LogWriteLine(string msg, string fileName = "log.txt")
         {
-            System.IO.StreamWriter sw = new System.IO.StreamWriter("log.txt", true);
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(fileName, true);
             sw.WriteLine(msg);
             sw.Close();
         }
@@ -187,10 +173,12 @@ namespace EulerProject.ProblemCollection.Problem051_100
             }
 
 
-            PrintGame(nodes[0].GameId, true);
+            PrintGame(nodes[0].GameId);
 
             int possibleNumbersCount = nodes.Sum(n => n.PossibleNumbers.Count);
             int prevPossibleNumbersCount = 81 * 9;
+
+            int step = 0;
 
             while (possibleNumbersCount != prevPossibleNumbersCount && nodes.Any(n => !n.Solved))
             {
@@ -202,31 +190,42 @@ namespace EulerProject.ProblemCollection.Problem051_100
                         nn.Row == solvedNode.Row
                         || nn.Column == solvedNode.Column
                         || nn.Zone == solvedNode.Zone)) 
-                        n.PossibleNumbers.Remove(solvedNode.Number);
+                        n.PossibleNumbers.Remove(solvedNode.Number.Value);
                 }
 
                 foreach(Node n in nodes.Where(nn => !nn.Solved && nn.PossibleNumbers.Count() == 1)) 
                 {
-                    n.Solved = true;
+                    n.Number = n.PossibleNumbers[0];
                     n.PossibleNumbers.Clear();
                 }
 
-                Console.WriteLine("After removing solved numbers from all possible numbers list");
-                PrintGame(nodes[0].GameId, true);
+                step ++;
+                string logFileName = "Log" + step.ToString() + ".txt";
+                InitLog(logFileName);
+
+                Console.WriteLine($"After step {step} removing solved numbers from all possible numbers list");
+                PrintGame(nodes[0].GameId, logFileName);
 
                 List<Node> unsolvedNodes = nodes.Where(nn => !nn.Solved).ToList();
                 for(int i = 0; i < unsolvedNodes.Count; i ++)
                 {
                     Node n = unsolvedNodes[i];
+                    if (n.Row == 2 && (n.Column <= 1))
+                    {
+                        int u = 9;
+                    }
+
                     foreach(int j in n.PossibleNumbers)
                     {
-                        if (
-                            !nodes.Any(nn => nn.PossibleNumbers.Contains(j) && nn.Row == n.Row && nn.Column!=n.Column)
-                            || !nodes.Any(nn => nn.PossibleNumbers.Contains(j) && nn.Zone == n.Zone && (nn.Column!=n.Column || nn.Row != n.Row))
-                            || !nodes.Any(nn => nn.PossibleNumbers.Contains(j) && nn.Row != n.Row && nn.Column==n.Column)
-                            )
+                        int y = -1;
+                        if (!nodes.Any(nn => nn.PossibleNumbers.Contains(j) && nn.Row == n.Row && nn.Column!=n.Column))
+                            y = 0;
+                        else if (!nodes.Any(nn => nn.PossibleNumbers.Contains(j) && nn.Zone == n.Zone && (nn.Column!=n.Column || nn.Row != n.Row)))
+                            y = 1;
+                        else if (!nodes.Any(nn => nn.PossibleNumbers.Contains(j) && nn.Row != n.Row && nn.Column==n.Column))
+                            y = 2;
+                        if (y > 0)
                         {
-                            n.Solved = true;
                             n.Number = j;
                             n.PossibleNumbers.Clear();
                             break;
@@ -234,8 +233,10 @@ namespace EulerProject.ProblemCollection.Problem051_100
                     }
                 }
 
-                Console.WriteLine("After setting node with exclusive possible number to solved");
-                PrintGame(nodes[0].GameId, true);
+                step ++;
+                Console.WriteLine($"After step {step} - setting node with exclusive possible number to solved");
+                logFileName = "Log" + step.ToString() + ".txt";
+                PrintGame(nodes[0].GameId, logFileName);
                 possibleNumbersCount = nodes.Sum(n => n.PossibleNumbers.Count);
             } 
 
@@ -255,7 +256,7 @@ namespace EulerProject.ProblemCollection.Problem051_100
 
             InitLog();
 
-            // SingleEliminate(nodes);
+            SingleEliminate(nodes);
         }
     }
 
@@ -269,10 +270,47 @@ namespace EulerProject.ProblemCollection.Problem051_100
 
         public int Zone{get;set;}
 
-        public bool Solved{get;set; }
+        public int Index 
+        {
+            get
+            {
+                return Row * 9 + Column;
+            }
+        }
 
-        public int Number{get;set;} 
+        public bool Solved
+        {
+            get
+            {
+                return Number.HasValue;
+            }
+        }
+
+        public int? Number{get;set;} 
 
         public List<int> PossibleNumbers{get;set;}
+
+        public string[] Output
+        {
+            get
+            {
+                string [] threeLines = new string[3];
+
+                for(int line = 0; line < 3; line ++)
+                {
+                    if(Number.HasValue)
+                        threeLines[line] = line == 1 ? $"  {Number.Value}  " : "     ";
+                    else
+                    {
+                        threeLines[line] = " ";
+                        for(int i = 0; i < 3 && i + 3 * line < PossibleNumbers.Count; i++)
+                            threeLines[line] = threeLines[line] + PossibleNumbers[3 * line + i];
+                        threeLines[line] = threeLines[line] + " ";
+                    }
+                }
+
+                return new string[3];
+            }
+        }
     }
 }
