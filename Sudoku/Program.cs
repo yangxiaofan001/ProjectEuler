@@ -16,16 +16,21 @@ namespace EulerProject
             {
                 Game game = new Game(sampleGames[i]);
                 game.Id = i;
-                game.Print($"game{i}_log00.txt");
+                game.LogFileName = $"game{i}_log.txt";
+game.LogFileName = $"game{i}_00log.txt";
+                game.Print();
 
                 int solved = game.Solve();
                 string msg = solved < 0 ? $"Game {i} cannot be solved by easy elimination. ({game.Nodes.Sum(n => n.PossibleNumbers.Count)})" : $"Game {i} is solved.";
                 Console.WriteLine(msg);
+game.LogFileName = $"game{i}_01log.txt";
+                game.Print();
 
-                game.Print($"game{i}_log01.txt");
-
-                Console.WriteLine("Step by step:");
+game.LogFileName = $"game{i}_log.txt";
+                // Console.WriteLine("Step by step:");
                 int endResult = game.SolveStepByStep();
+                game.Print();
+
 
                 Console.WriteLine(endResult == 1 ? "Game is solved." : "Cannot solve the game.");
             }

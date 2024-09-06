@@ -8,6 +8,7 @@ public class Utils
         sw.Close();
     }
 
+
     public static void LogWrite(string msg, string fileName = "log.txt")
     {
         System.IO.StreamWriter sw = new System.IO.StreamWriter(fileName, true);
@@ -21,4 +22,6 @@ public class Utils
         sw.WriteLine(msg);
         sw.Close();
     }
+
+
 }

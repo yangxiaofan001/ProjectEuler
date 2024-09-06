@@ -1,34 +1,5 @@
 
 
-two nodes in the same row/column/zone has only same two numbers, remove these two numbers from other nodes in the same row/column/zone
-
-Game 5 cannot be solved by single elimination
-Game 6 cannot be solved by single elimination
-Game 9 cannot be solved by single elimination
-Game 24 cannot be solved by single elimination
-Game 41 cannot be solved by single elimination
-Game 42 cannot be solved by single elimination
-Game 46 cannot be solved by single elimination
-Game 47 cannot be solved by single elimination
-Game 48 cannot be solved by single elimination
-Game 49 cannot be solved by single elimination
-
-
-Game 5 cannot be solved by easy elimination
-Game 6 cannot be solved by easy elimination
-Game 41 cannot be solved by easy elimination
-Game 47 cannot be solved by easy elimination
-Game 48 cannot be solved by easy elimination
-Game 49 cannot be solved by easy elimination
-
-
-Game 5 cannot be solved by easy elimination
-Game 6 cannot be solved by easy elimination
-Game 41 cannot be solved by easy elimination
-Game 47 cannot be solved by easy elimination
-Game 48 cannot be solved by easy elimination
-Game 49 cannot be solved by easy elimination
-
 
 1. Naked Singles
 	A cell with only one candidate
