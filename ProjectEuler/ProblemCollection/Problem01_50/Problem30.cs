@@ -296,7 +296,7 @@ namespace EulerProject.ProblemCollection
             return grandTotal.ToString();
         }
 
-        int s4s5MaxExpo = 20;
+        int s4s5MaxExpo = 5;
 
         public override string Solution4()
         {
