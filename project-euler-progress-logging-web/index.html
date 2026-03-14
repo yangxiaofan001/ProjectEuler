@@ -1,3 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Euler Progress Log</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans">
 
+    <div class="max-w-6xl mx-auto p-6">
+        <header class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+            <div>
+                <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">Project Euler</h1>
+                <p class="text-slate-500 mt-2">Personal Progress Tracking System</p>
+            </div>
+            <div id="stats-container" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 min-w-[200px]">
+                <div class="text-sm text-slate-500 uppercase font-bold tracking-wider">Progress</div>
+                <div class="flex items-baseline gap-2">
+                    <span id="solved-count" class="text-3xl font-black text-blue-600">0</span>
+                    <span class="text-slate-400">/</span>
+                    <span id="total-count" class="text-xl font-bold text-slate-700">977</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2 rounded-full mt-2 overflow-hidden">
+                    <div id="progress-bar" class="bg-blue-500 h-full transition-all duration-1000" style="width: 0%"></div>
+                </div>
+            </div>
+        </header>
 
-this is a test...
+        <div class="flex gap-2 mb-6">
+            <button onclick="filterProblems('all')" class="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 transition">All</button>
+            <button onclick="filterProblems('solved')" class="px-4 py-2 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition">Solved</button>
+            <button onclick="filterProblems('pending')" class="px-4 py-2 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition">Pending</button>
+        </div>
+
+        <div id="problem-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-10 gap-3">
+            <div class="col-span-full text-center py-20 text-slate-400 animate-pulse">Loading problems from Supabase...</div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化 Supabase (替换为你自己的 Key)
+        const SUPABASE_URL = '你的_SUPABASE_URL';
+        const SUPABASE_KEY = '你的_SUPABASE_ANON_KEY';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let allProblems = [];
+
+        async function fetchProblems() {
+            const { data, error } = await supabase
+                .from('problems')
+                .select('*')
+                .order('number', { ascending: true });
+
+            if (error) {
+                console.error('Error:', error);
+                return;
+            }
+
+            allProblems = data;
+            renderProblems(allProblems);
+            updateStats();
+        }
+
+        function renderProblems(problems) {
+            const grid = document.getElementById('problem-grid');
+            grid.innerHTML = problems.map(p => `
+                <a href="${p.url}" target="_blank" 
+                   class="aspect-square flex flex-col items-center justify-center rounded-lg border transition-all duration-200 group
+                   ${p.solved_on ? 'bg-green-500 border-green-600 text-white shadow-lg shadow-green-200' : 'bg-white border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-500'}">
+                    <span class="text-xs opacity-70 group-hover:scale-110 transition-transform">#</span>
+                    <span class="text-lg font-bold">${p.number}</span>
+                    ${p.solved_on ? '<span class="text-[10px] mt-1 font-medium">DONE</span>' : ''}
+                </a>
+            `).join('');
+        }
+
+        function updateStats() {
+            const solved = allProblems.filter(p => p.solved_on).length;
+            const total = allProblems.length;
+            document.getElementById('solved-count').innerText = solved;
+            document.getElementById('total-count').innerText = total;
+            document.getElementById('progress-bar').style.width = `${(solved / total) * 100}%`;
+        }
+
+        function filterProblems(type) {
+            if (type === 'all') renderProblems(allProblems);
+            else if (type === 'solved') renderProblems(allProblems.filter(p => p.solved_on));
+            else if (type === 'pending') renderProblems(allProblems.filter(p => !p.solved_on));
+        }
+
+        fetchProblems();
+    </script>
+</body>
+</html>
