@@ -11,7 +11,7 @@
     <div class="max-w-6xl mx-auto p-6">
         <header class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
             <div>
-                <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">Project Euler 015</h1>
+                <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">Project Euler 016</h1>
                 <p class="text-slate-500 mt-2">Personal Progress Tracking System</p>
             </div>
             <div id="stats-container" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 min-w-[200px]">
@@ -62,19 +62,46 @@
             updateStats();
         }
 
-        function renderProblems(problems) {
-            const grid = document.getElementById('problem-grid');
-            grid.innerHTML = problems.map(p => `
-                <a href="${p.url}" target="_blank" 
-                   class="aspect-square flex flex-col items-center justify-center rounded-lg border transition-all duration-200 group
-                   ${p.solved_on ? 'bg-green-500 border-green-600 text-white shadow-lg shadow-green-200' : 'bg-white border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-500'}">
-                    <span class="text-xs opacity-70 group-hover:scale-110 transition-transform">#</span>
-                    <span class="text-lg font-bold">${p.number}</span>
-                    ${p.solved_on ? '<span class="text-[10px] mt-1 font-medium">DONE</span>' : ''}
-                </a>
-            `).join('');
-        }
+function renderProblems(problems) {
+    const container = document.getElementById('problem-container'); // 假设父容器 ID
+    
+    let html = `
+    <div class="overflow-x-auto shadow-md rounded-lg">
+        <table class="w-full text-sm text-left text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3">#</th>
+                    <th class="px-6 py-3">Title</th>
+                    <th class="px-6 py-3 text-center">Status & Solutions</th>
+                </tr>
+            </thead>
+            <tbody>`;
 
+    html += problems.map(p => {
+        const isSolved = !!p.solved_on;
+        return `
+            <tr class="bg-white border-b hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 font-medium text-gray-900">
+                    <a href="https://projecteuler.net/problem=${p.number}" target="_blank" class="text-blue-600 hover:underline">
+                        ${p.number}
+                    </a>
+                </td>
+                <td class="px-6 py-4">
+                    ${p.title || '<span class="text-gray-400 italic">Loading title...</span>'}
+                </td>
+                <td class="px-6 py-4 text-center">
+                    ${isSolved 
+                        ? `<a href="solutions.html?id=${p.number}" class="text-white bg-green-500 hover:bg-green-600 px-3 py-1 rounded-full text-xs transition-colors">
+                             View Solution
+                           </a>`
+                        : '<span class="text-gray-300">Pending</span>'}
+                </td>
+            </tr>`;
+    }).join('');
+
+    html += `</tbody></table></div>`;
+    container.innerHTML = html;
+}
         function updateStats() {
             const solved = allProblems.filter(p => p.solved_on).length;
             const total = allProblems.length;
