@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Solution Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-200 p-8">
+    <div class="max-w-4xl mx-auto">
+        <a href="index.html" class="text-blue-400 hover:underline mb-4 inline-block">← Back to Dashboard</a>
+        
+        <h1 id="prob-title" class="text-3xl font-bold mb-2">Problem #...</h1>
+        <div id="prob-meta" class="text-slate-400 mb-8 text-sm"></div>
+
+        <div class="bg-slate-800 rounded-lg overflow-hidden border border-slate-700">
+            <div class="px-4 py-2 bg-slate-700 text-xs font-mono flex justify-between">
+                <span>Solution.cs</span>
+                <span id="exec-time"></span>
+            </div>
+            <pre><code id="code-block" class="language-csharp"> // Loading source code... </code></pre>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+        
+        const params = new URLSearchParams(window.location.search);
+        const problemId = params.get('id');
+        
+        // 初始化 Supabase (记得填入你的 URL 和 Key)
+        const supabase = createClient('URL', 'KEY');
+
+        async function loadSolution() {
+            // 1. 获取题目和源码
+            const { data, error } = await supabase
+                .from('problems') // 假设代码存在 problems 表或 solutions 表
+                .select('*, solutions(*)')
+                .eq('number', problemId)
+                .single();
+
+            if (data) {
+                document.getElementById('prob-title').innerText = `#${data.number}: ${data.title}`;
+                document.getElementById('prob-meta').innerText = `Solved on: ${new Date(data.solved_on).toLocaleDateString()}`;
+                
+                // 填充代码
+                const codeNode = document.getElementById('code-block');
+                codeNode.textContent = data.source_code || "// No source code available yet.";
+                
+                // 触发 Prism 渲染高亮
+                Prism.highlightElement(codeNode);
+            }
+        }
+        loadSolution();
+    </script>
+</body>
+</html>
