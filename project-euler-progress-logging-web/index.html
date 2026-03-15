@@ -11,7 +11,7 @@
     <div class="max-w-6xl mx-auto p-6">
         <header class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
             <div>
-                <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">Project Euler 018</h1>
+                <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">Project Euler 019</h1>
                 <p class="text-slate-500 mt-2">Personal Progress Tracking System</p>
             </div>
             <div id="stats-container" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 min-w-[200px]">
@@ -33,10 +33,9 @@
             <button onclick="filterProblems('pending')" class="px-4 py-2 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition">Pending</button>
         </div>
 
-        <div id="problem-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-10 gap-3">
+        <div id="problem-container" class="mt-8">
             <div class="col-span-full text-center py-20 text-slate-400 animate-pulse">Loading problems from Supabase...</div>
         </div>
-        <div id="problem-container" class="mt-8"></div>
     </div>
 
     <script>
